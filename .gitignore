@@ -1,0 +1,28 @@
+# Eclipse
+.metadata/
+.settings/
+.classpath
+.project
+
+# Java build files
+*.class
+bin/
+target/
+
+# Generated files
+build/
+
+# Logs
+*.log
+
+# Operating system
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+
+# Environment / secrets
+.env
+*.env

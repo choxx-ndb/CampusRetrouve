@@ -1,0 +1,26 @@
+# --- Dossiers de compilation et de build ---
+bin/
+build/
+target/
+.gradle/
+.settings/
+
+# --- Fichiers spécifiques à Eclipse et Tomcat ---
+.metadata/
+.classpath
+.project
+Servers/
+.recommenders/
+
+# --- Fichiers temporaires système ---
+.DS_Store
+Thumbs.db
+*.log
+
+# --- Dossier d'upload (On ignore les images envoyées pendant tes tests, MAIS...) ---
+src/main/webapp/uploads/*
+
+# (...On garde uniquement les images par défaut pour que le projet fonctionne après clonage)
+!src/main/webapp/uploads/default-*.jpeg
+!src/main/webapp/uploads/default-*.jpg
+!src/main/webapp/uploads/default-*.png
