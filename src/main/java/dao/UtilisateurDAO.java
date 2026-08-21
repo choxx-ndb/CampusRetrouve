@@ -1,8 +1,9 @@
 package dao;
 
 import dao.util.DBConnection;
-import modele.Utilisateur;
 
+import modele.Utilisateur;
+import repository.UtilisateurRepository;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -11,7 +12,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UtilisateurDAO implements CommonDAO<Utilisateur> {
+public class UtilisateurDAO implements CommonDAO<Utilisateur>, UtilisateurRepository {
     @Override
     public void add(Utilisateur utilisateur) {
         String sql = "INSERT INTO utilisateurs (nom, email, motdepass, role) VALUES (?, ?, ?, ?)";
@@ -103,7 +104,7 @@ public class UtilisateurDAO implements CommonDAO<Utilisateur> {
         }
         return null;
     }
-
+    @Override
     public Utilisateur authentifier(String email, String motdepass) {
         String sql = "SELECT * FROM utilisateurs WHERE email = ? AND motdepass = ?";
         try (Connection connection = DBConnection.getConnection();
@@ -120,11 +121,11 @@ public class UtilisateurDAO implements CommonDAO<Utilisateur> {
         }
         return null;
     }
-
+    @Override
     public boolean emailExiste(String email) {
         return exists("SELECT 1 FROM utilisateurs WHERE email = ?", email);
     }
-
+    @Override
     public boolean nomExiste(String nom) {
         return exists("SELECT 1 FROM utilisateurs WHERE nom = ?", nom);
     }
