@@ -78,6 +78,7 @@ public class ReclamationDAO implements CommonDAO<Reclamation>, ReclamationReposi
             throw new RuntimeException("Erreur lors de la suppression rÃ©clamation", e);
         }
     }
+
     @Override
     public List<Reclamation> findByUtilisateur(int utilisateurId) {
         return queryList(BASE_SELECT + "WHERE r.utilisateur_id = ? ORDER BY r.created_at DESC", utilisateurId);

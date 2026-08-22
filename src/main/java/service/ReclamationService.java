@@ -32,6 +32,7 @@ public class ReclamationService {
                 "objetRepository ne peut pas être null"
         );
     }
+
     public void creerReclamation(Reclamation reclamation) {
         if (reclamation == null || reclamation.getObjetId() <= 0 || reclamation.getUtilisateurId() <= 0 || isBlank(reclamation.getMessage())) {
             throw new IllegalArgumentException("Message obligatoire pour crÃ©er une rÃ©clamation.");
