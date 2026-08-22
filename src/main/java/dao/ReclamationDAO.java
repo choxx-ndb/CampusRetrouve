@@ -3,6 +3,7 @@ package dao;
 import dao.util.DBConnection;
 import modele.MessageReclamation;
 import modele.Reclamation;
+import repository.ReclamationRepository;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -12,7 +13,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ReclamationDAO implements CommonDAO<Reclamation> {
+public class ReclamationDAO implements CommonDAO<Reclamation>, ReclamationRepository {
     private static final String BASE_SELECT = "SELECT r.*, o.titre AS objet_titre, o.proprietaire_id, demandeur.nom AS demandeur_nom, proprietaire.nom AS proprietaire_nom " +
             "FROM reclamations r " +
             "JOIN objets o ON o.id = r.objet_id " +
@@ -78,18 +79,22 @@ public class ReclamationDAO implements CommonDAO<Reclamation> {
         }
     }
 
+    @Override
     public List<Reclamation> findByUtilisateur(int utilisateurId) {
         return queryList(BASE_SELECT + "WHERE r.utilisateur_id = ? ORDER BY r.created_at DESC", utilisateurId);
     }
 
+    @Override
     public List<Reclamation> findRecuesPourProprietaire(int proprietaireId) {
         return queryList(BASE_SELECT + "WHERE o.proprietaire_id = ? ORDER BY r.created_at DESC", proprietaireId);
     }
 
+    @Override
     public List<Reclamation> findByStatus(String status) {
         return queryList(BASE_SELECT + "WHERE r.status = ? ORDER BY r.created_at DESC", status);
     }
 
+    @Override
     public void ajouterMessage(MessageReclamation message) {
         String sql = "INSERT INTO messages_reclamation (reclamation_id, expediteur_id, contenu) VALUES (?, ?, ?)";
         try (Connection connection = DBConnection.getConnection();
@@ -103,6 +108,7 @@ public class ReclamationDAO implements CommonDAO<Reclamation> {
         }
     }
 
+    @Override
     public List<MessageReclamation> getMessagesByReclamation(int reclamationId) {
         List<MessageReclamation> messages = new ArrayList<>();
         String sql = "SELECT m.*, u.nom AS expediteur_nom FROM messages_reclamation m JOIN utilisateurs u ON u.id = m.expediteur_id WHERE m.reclamation_id = ? ORDER BY m.date_envoi ASC";
