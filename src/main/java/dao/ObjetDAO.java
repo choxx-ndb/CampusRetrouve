@@ -3,6 +3,7 @@ package dao;
 import dao.util.DBConnection;
 import modele.Objet;
 
+import repository.ObjetRepository;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -11,7 +12,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ObjetDAO implements CommonDAO<Objet> {
+public class ObjetDAO implements CommonDAO<Objet>, ObjetRepository {
     @Override
     public void add(Objet objet) {
         String sql = "INSERT INTO objets (titre, description, type, localisation, image_path, status, proprietaire_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
@@ -70,7 +71,7 @@ public class ObjetDAO implements CommonDAO<Objet> {
             throw new RuntimeException("Erreur lors de la suppression objet", e);
         }
     }
-
+    @Override
     public List<Objet> findByType(String type) {
         return queryList("SELECT o.*, u.nom AS proprietaire_nom FROM objets o JOIN utilisateurs u ON u.id = o.proprietaire_id WHERE o.type = ? ORDER BY o.created_at DESC", type);
     }
@@ -78,7 +79,7 @@ public class ObjetDAO implements CommonDAO<Objet> {
     public List<Objet> findByUserId(int proprietaireId) {
         return queryList("SELECT o.*, u.nom AS proprietaire_nom FROM objets o JOIN utilisateurs u ON u.id = o.proprietaire_id WHERE o.proprietaire_id = ? ORDER BY o.created_at DESC", proprietaireId);
     }
-
+    @Override
     public void updateStatus(int objetId, String status) {
         String sql = "UPDATE objets SET status = ? WHERE id = ?";
         try (Connection connection = DBConnection.getConnection();
