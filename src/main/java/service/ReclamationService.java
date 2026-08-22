@@ -1,38 +1,37 @@
 package service;
 
+import java.util.List;
 import java.util.Objects;
 
-import repository.ObjetRepository;
-import repository.ReclamationRepository;
 import dao.ObjetDAO;
 import dao.ReclamationDAO;
 import modele.MessageReclamation;
 import modele.Objet;
 import modele.Reclamation;
-
-import java.util.List;
+import repository.ObjetRepository;
+import repository.ReclamationRepository;
 
 public class ReclamationService {
-	private final ReclamationRepository reclamationRepository;
-	private final ObjetRepository objetRepository;
 
-	public ReclamationService() {
-	    this(new ReclamationDAO(), new ObjetDAO());
-	}
+    private final ReclamationRepository reclamationRepository;
+    private final ObjetRepository objetRepository;
 
-	public ReclamationService(
-	        ReclamationRepository reclamationRepository,
-	        ObjetRepository objetRepository) {
-	    this.reclamationRepository = Objects.requireNonNull(
-	            reclamationRepository,
-	            "reclamationRepository ne peut pas être null"
-	    );
-	    this.objetRepository = Objects.requireNonNull(
-	            objetRepository,
-	            "objetRepository ne peut pas être null"
-	    );
-	}
+    public ReclamationService() {
+        this(new ReclamationDAO(), new ObjetDAO());
+    }
 
+    public ReclamationService(
+            ReclamationRepository reclamationRepository,
+            ObjetRepository objetRepository) {
+        this.reclamationRepository = Objects.requireNonNull(
+                reclamationRepository,
+                "reclamationRepository ne peut pas être null"
+        );
+        this.objetRepository = Objects.requireNonNull(
+                objetRepository,
+                "objetRepository ne peut pas être null"
+        );
+    }
     public void creerReclamation(Reclamation reclamation) {
         if (reclamation == null || reclamation.getObjetId() <= 0 || reclamation.getUtilisateurId() <= 0 || isBlank(reclamation.getMessage())) {
             throw new IllegalArgumentException("Message obligatoire pour crÃ©er une rÃ©clamation.");
