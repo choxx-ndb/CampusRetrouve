@@ -17,4 +17,6 @@ public interface ObjetRepository {
     List<Objet> findByType(String type);
 
     void updateStatus(int objetId, String status);
+
+    int countAll();
 }

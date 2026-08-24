@@ -133,6 +133,7 @@ public class ReclamationDAO implements CommonDAO<Reclamation>, ReclamationReposi
         return messages;
     }
 
+    @Override
     public int countEnAttente() {
         try (Connection connection = DBConnection.getConnection();
              Statement st = connection.createStatement();

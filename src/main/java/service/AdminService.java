@@ -6,53 +6,110 @@ import dao.UtilisateurDAO;
 import modele.Objet;
 import modele.Reclamation;
 import modele.Utilisateur;
+import repository.ObjetRepository;
+import repository.ReclamationRepository;
+import repository.UtilisateurRepository;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class AdminService {
-    private final UtilisateurDAO utilisateurDAO = new UtilisateurDAO();
-    private final ObjetDAO objetDAO = new ObjetDAO();
-    private final ReclamationDAO reclamationDAO = new ReclamationDAO();
+
+    private final UtilisateurRepository utilisateurRepository;
+    private final ObjetRepository objetRepository;
+    private final ReclamationRepository reclamationRepository;
+
+    public AdminService() {
+        this(
+                new UtilisateurDAO(),
+                new ObjetDAO(),
+                new ReclamationDAO()
+        );
+    }
+
+    public AdminService(
+            UtilisateurRepository utilisateurRepository,
+            ObjetRepository objetRepository,
+            ReclamationRepository reclamationRepository) {
+
+        this.utilisateurRepository = Objects.requireNonNull(
+                utilisateurRepository,
+                "utilisateurRepository ne peut pas être null"
+        );
+
+        this.objetRepository = Objects.requireNonNull(
+                objetRepository,
+                "objetRepository ne peut pas être null"
+        );
+
+        this.reclamationRepository = Objects.requireNonNull(
+                reclamationRepository,
+                "reclamationRepository ne peut pas être null"
+        );
+    }
 
     public Map<String, Integer> getStatistiquesGlobales() {
         Map<String, Integer> stats = new HashMap<>();
-        stats.put("utilisateurs", utilisateurDAO.countAll());
-        stats.put("admins", utilisateurDAO.countAdmins());
-        stats.put("objets", objetDAO.countAll());
-        stats.put("reclamationsEnAttente", reclamationDAO.countEnAttente());
+
+        stats.put(
+                "utilisateurs",
+                utilisateurRepository.countAll()
+        );
+
+        stats.put(
+                "admins",
+                utilisateurRepository.countAdmins()
+        );
+
+        stats.put(
+                "objets",
+                objetRepository.countAll()
+        );
+
+        stats.put(
+                "reclamationsEnAttente",
+                reclamationRepository.countEnAttente()
+        );
+
         return stats;
     }
 
     public List<Utilisateur> listerUtilisateurs() {
-        return utilisateurDAO.selectAll();
+        return utilisateurRepository.selectAll();
     }
 
     public List<Objet> listerObjets() {
-        return objetDAO.selectAll();
+        return objetRepository.selectAll();
     }
 
     public List<Reclamation> listerReclamations() {
-        return reclamationDAO.selectAll();
+        return reclamationRepository.selectAll();
     }
 
     public void promouvoirEnAdmin(int utilisateurId) {
-        utilisateurDAO.promouvoirEnAdmin(utilisateurId);
+        utilisateurRepository.promouvoirEnAdmin(utilisateurId);
     }
 
     public void retrograderEnUser(int utilisateurId) {
-        utilisateurDAO.retrograderEnUser(utilisateurId);
+        utilisateurRepository.retrograderEnUser(utilisateurId);
     }
 
-    public void supprimerUtilisateur(int utilisateurId, int adminCourantId) {
+    public void supprimerUtilisateur(
+            int utilisateurId,
+            int adminCourantId) {
+
         if (utilisateurId == adminCourantId) {
-            throw new IllegalArgumentException("Vous ne pouvez pas supprimer votre propre compte.");
+            throw new IllegalArgumentException(
+                    "Vous ne pouvez pas supprimer votre propre compte."
+            );
         }
-        utilisateurDAO.delete(utilisateurId);
+
+        utilisateurRepository.delete(utilisateurId);
     }
 
     public void supprimerAnnonce(int objetId) {
-        objetDAO.delete(objetId);
+        objetRepository.delete(objetId);
     }
 }
