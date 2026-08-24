@@ -92,6 +92,7 @@ public class ObjetDAO implements CommonDAO<Objet>, ObjetRepository {
         }
     }
 
+    @Override
     public int countAll() {
         try (Connection connection = DBConnection.getConnection();
              Statement st = connection.createStatement();

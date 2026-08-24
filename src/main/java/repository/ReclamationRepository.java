@@ -24,4 +24,6 @@ public interface ReclamationRepository {
     void ajouterMessage(MessageReclamation message);
 
     List<MessageReclamation> getMessagesByReclamation(int reclamationId);
+
+    int countEnAttente();
 }

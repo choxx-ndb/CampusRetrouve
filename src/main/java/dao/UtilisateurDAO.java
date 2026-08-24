@@ -130,18 +130,22 @@ public class UtilisateurDAO implements CommonDAO<Utilisateur>, UtilisateurReposi
         return exists("SELECT 1 FROM utilisateurs WHERE nom = ?", nom);
     }
 
+    @Override
     public void promouvoirEnAdmin(int id) {
         changerRole(id, "admin");
     }
 
+    @Override
     public void retrograderEnUser(int id) {
         changerRole(id, "user");
     }
 
+    @Override
     public int countAll() {
         return count("SELECT COUNT(*) FROM utilisateurs");
     }
 
+    @Override
     public int countAdmins() {
         return count("SELECT COUNT(*) FROM utilisateurs WHERE role = 'admin'");
     }
