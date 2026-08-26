@@ -14,7 +14,7 @@ public interface UtilisateurRepository {
 
     void delete(int id);
 
-    Utilisateur authentifier(String email, String motdepass);
+    Utilisateur findByEmail(String email);
 
     boolean emailExiste(String email);
 
