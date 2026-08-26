@@ -27,7 +27,7 @@
             </div>
             <div class="mb-3">
                 <label class="form-label">Mot de passe</label>
-                <input class="form-control" type="password" name="motdepass" required minlength="6">
+                <input class="form-control" type="password" name="motdepass" required minlength="15" maxlength="72">
             </div>
             <button class="btn btn-primary w-100" type="submit">S'inscrire</button>
         </form>

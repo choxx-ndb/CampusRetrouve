@@ -49,15 +49,16 @@ CREATE TABLE messages_reclamation (
     CONSTRAINT fk_messages_expediteur FOREIGN KEY (expediteur_id)
         REFERENCES utilisateurs(id) ON DELETE CASCADE
 );
-
+-- DONNEES DE DEMONSTRATION LOCALES UNIQUEMENT.
+-- Ne jamais reutiliser ces identifiants en production.
 INSERT INTO utilisateurs (nom, email, motdepass, role) VALUES
-('Admin UMI', 'admin@umi.ac.ma', 'admin123', 'admin'),
-('Super Admin', 'superadmin@umi.ac.ma', 'admin123', 'admin'),
-('Ahmed', 'ahmed@umi.ac.ma', 'user123', 'user'),
-('Youssef', 'youssef@umi.ac.ma', 'user123', 'user'),
-('Sara', 'sara@umi.ac.ma', 'user123', 'user'),
-('Meryem', 'meryem@umi.ac.ma', 'user123', 'user'),
-('Omar', 'omar@umi.ac.ma', 'user123', 'user');
+('Admin UMI', 'admin@umi.ac.ma', '$2a$12$B/JcqqbUaKOsx2bZ/xQRxOA5VlQ2N2XFcg5nvx.3w9W0oLSq3Hyvq', 'admin'),
+('Super Admin', 'superadmin@umi.ac.ma', '$2a$12$YXd9OLxZS/MaLO2J3hEsUePHfyaJzJr.85OouGyJXKIAfvqGT9xjW', 'admin'),
+('Ahmed', 'ahmed@umi.ac.ma', '$2a$12$MM/GlEBhjnr2PIxl9QVQ8.qBMD6YuETz8nVNEgpFoewuccwnvxh.G', 'user'),
+('Youssef', 'youssef@umi.ac.ma', '$2a$12$rUzQHeC1iAsp3eqH.C3bQuevIKvvcTA0QHQSeEpTgvTzasXptV.SS', 'user'),
+('Sara', 'sara@umi.ac.ma', '$2a$12$AoMDxR83GUXcdOwiqUqc3eg0tuZMjeygHF3muoniVQz76AE1cWPGq', 'user'),
+('Meryem', 'meryem@umi.ac.ma', '$2a$12$VmavsSuAUOC8dUsZG9AEC.T0wy4WFJ4K/fSLRqyX/hEf.d.VMutJq', 'user'),
+('Omar', 'omar@umi.ac.ma', '$2a$12$9/w.h/VBm/2ZspSFtweYi.YLTYNcMxF81TkPY.y4q4K7GGNMitqEK', 'user');
 
 INSERT INTO objets (titre, description, type, localisation, image_path, status, proprietaire_id) VALUES
 ('iPhone 12 perdu', 'Coque noire, �cran l�g�rement ray�, perdu apr�s le cours de r�seau.', 'perdue', 'B�timent A', 'uploads/default-phone.jpg', 'reclame', 3),

@@ -7,6 +7,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import repository.UtilisateurRepository;
+import security.PasswordHasher;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -23,52 +24,125 @@ class UtilisateurServiceTest {
     @Mock
     private UtilisateurRepository utilisateurRepository;
 
+    @Mock
+    private PasswordHasher passwordHasher;
+
     private UtilisateurService utilisateurService;
 
     @BeforeEach
     void setUp() {
         utilisateurService =
-                new UtilisateurService(utilisateurRepository);
+                new UtilisateurService(
+                        utilisateurRepository,
+                        passwordHasher
+                );
     }
 
     @Test
     void shouldReturnNullWhenCredentialsAreBlank() {
         Utilisateur resultat =
-                utilisateurService.authentifier(" ", "secret123");
+                utilisateurService.authentifier(
+                        " ",
+                        "CampusUser2026!"
+                );
 
         assertNull(resultat);
-        verifyNoInteractions(utilisateurRepository);
+        verifyNoInteractions(
+                utilisateurRepository,
+                passwordHasher
+        );
     }
 
     @Test
-    void shouldNormalizeEmailBeforeAuthentication() {
-        Utilisateur utilisateur = new Utilisateur();
+    void shouldReturnNullWhenEmailDoesNotExist() {
+        when(utilisateurRepository.findByEmail(
+                "student@umi.ac.ma"
+        )).thenReturn(null);
 
-        when(utilisateurRepository.authentifier(
-                "student@umi.ac.ma",
-                "secret123"
+        Utilisateur resultat =
+                utilisateurService.authentifier(
+                        "student@umi.ac.ma",
+                        "CampusUser2026!"
+                );
+
+        assertNull(resultat);
+
+        verify(utilisateurRepository)
+                .findByEmail("student@umi.ac.ma");
+
+        verifyNoInteractions(passwordHasher);
+    }
+
+    @Test
+    void shouldReturnNullWhenPasswordIsIncorrect() {
+        Utilisateur utilisateur = new Utilisateur();
+        utilisateur.setMotdepass("stored-hash");
+
+        when(utilisateurRepository.findByEmail(
+                "student@umi.ac.ma"
         )).thenReturn(utilisateur);
 
-        Utilisateur resultat = utilisateurService.authentifier(
-                " Student@UMI.AC.MA ",
-                "secret123"
+        when(passwordHasher.matches(
+                "WrongPassword2026!",
+                "stored-hash"
+        )).thenReturn(false);
+
+        Utilisateur resultat =
+                utilisateurService.authentifier(
+                        "student@umi.ac.ma",
+                        "WrongPassword2026!"
+                );
+
+        assertNull(resultat);
+
+        verify(passwordHasher).matches(
+                "WrongPassword2026!",
+                "stored-hash"
         );
+    }
+
+    @Test
+    void shouldNormalizeEmailAndAuthenticateValidPassword() {
+        Utilisateur utilisateur = new Utilisateur();
+        utilisateur.setMotdepass("stored-hash");
+
+        when(utilisateurRepository.findByEmail(
+                "student@umi.ac.ma"
+        )).thenReturn(utilisateur);
+
+        when(passwordHasher.matches(
+                "CampusUser2026!",
+                "stored-hash"
+        )).thenReturn(true);
+
+        Utilisateur resultat =
+                utilisateurService.authentifier(
+                        " Student@UMI.AC.MA ",
+                        "CampusUser2026!"
+                );
 
         assertSame(utilisateur, resultat);
 
-        verify(utilisateurRepository).authentifier(
-                "student@umi.ac.ma",
-                "secret123"
+        verify(utilisateurRepository)
+                .findByEmail("student@umi.ac.ma");
+
+        verify(passwordHasher).matches(
+                "CampusUser2026!",
+                "stored-hash"
         );
     }
 
     @Test
-    void shouldNormalizeAndSaveValidRegistration() {
+    void shouldHashPasswordAndSaveValidRegistration() {
         Utilisateur utilisateur = new Utilisateur(
                 " Noureddine ",
                 "NOUREDDINE@UMI.AC.MA",
-                "secret123"
+                "CampusUser2026!"
         );
+
+        when(passwordHasher.hash(
+                "CampusUser2026!"
+        )).thenReturn("bcrypt-hash");
 
         utilisateurService.inscrire(utilisateur);
 
@@ -84,22 +158,32 @@ class UtilisateurServiceTest {
                 () -> assertEquals(
                         "user",
                         utilisateur.getRole()
+                ),
+                () -> assertEquals(
+                        "bcrypt-hash",
+                        utilisateur.getMotdepass()
                 )
         );
 
         verify(utilisateurRepository)
                 .emailExiste("noureddine@umi.ac.ma");
+
         verify(utilisateurRepository)
                 .nomExiste("Noureddine");
-        verify(utilisateurRepository).add(utilisateur);
+
+        verify(passwordHasher)
+                .hash("CampusUser2026!");
+
+        verify(utilisateurRepository)
+                .add(utilisateur);
     }
 
     @Test
-    void shouldRejectPasswordShorterThanSixCharacters() {
+    void shouldRejectPasswordShorterThanFifteenCharacters() {
         Utilisateur utilisateur = new Utilisateur(
                 "Noureddine",
                 "noureddine@umi.ac.ma",
-                "12345"
+                "short"
         );
 
         assertThrows(
@@ -107,6 +191,28 @@ class UtilisateurServiceTest {
                 () -> utilisateurService.inscrire(utilisateur)
         );
 
-        verifyNoInteractions(utilisateurRepository);
+        verifyNoInteractions(
+                utilisateurRepository,
+                passwordHasher
+        );
+    }
+
+    @Test
+    void shouldRejectPasswordLongerThanBcryptLimit() {
+        Utilisateur utilisateur = new Utilisateur(
+                "Noureddine",
+                "noureddine@umi.ac.ma",
+                "a".repeat(73)
+        );
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> utilisateurService.inscrire(utilisateur)
+        );
+
+        verifyNoInteractions(
+                utilisateurRepository,
+                passwordHasher
+        );
     }
 }

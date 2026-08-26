@@ -89,6 +89,7 @@ public class UtilisateurDAO implements CommonDAO<Utilisateur>, UtilisateurReposi
         }
     }
 
+    @Override
     public Utilisateur findByEmail(String email) {
         String sql = "SELECT * FROM utilisateurs WHERE email = ?";
         try (Connection connection = DBConnection.getConnection();
@@ -104,23 +105,7 @@ public class UtilisateurDAO implements CommonDAO<Utilisateur>, UtilisateurReposi
         }
         return null;
     }
-    @Override
-    public Utilisateur authentifier(String email, String motdepass) {
-        String sql = "SELECT * FROM utilisateurs WHERE email = ? AND motdepass = ?";
-        try (Connection connection = DBConnection.getConnection();
-             PreparedStatement ps = connection.prepareStatement(sql)) {
-            ps.setString(1, email);
-            ps.setString(2, motdepass);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return map(rs);
-                }
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException("Erreur lors de l'authentification", e);
-        }
-        return null;
-    }
+
     @Override
     public boolean emailExiste(String email) {
         return exists("SELECT 1 FROM utilisateurs WHERE email = ?", email);
