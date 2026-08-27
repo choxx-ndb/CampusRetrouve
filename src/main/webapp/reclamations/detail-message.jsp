@@ -27,13 +27,16 @@
     <link href="<%= request.getContextPath() %>/css/style.css" rel="stylesheet">
 </head>
 <body>
+
 <jsp:include page="/navbar.jsp"/>
+
 <header class="page-header">
     <div class="container">
         <h1><i class="fa-solid fa-comments me-2"></i>Discussion</h1>
         <p class="lead">Échange privé autour de la réclamation.</p>
     </div>
 </header>
+
 <main class="container pb-5">
     <div class="row g-4">
         <div class="col-lg-4">
@@ -44,17 +47,35 @@
                 <p><strong>Lieu:</strong> <%= objet.getLocalisation() %></p>
                 <p><strong>Propriétaire:</strong> <%= reclamation.getProprietaireNom() %></p>
                 <p><strong>Statut:</strong> <span class="badge bg-warning text-dark"><%= reclamation.getStatus() %></span></p>
+
                 <% if (proprietaire && "en_attente".equals(reclamation.getStatus())) { %>
                     <div class="d-grid gap-2">
-                        <a class="btn btn-success" href="<%= request.getContextPath() %>/reclamation?action=traiter&id=<%= reclamation.getId() %>&decision=approuve">Approuver</a>
-                        <a class="btn btn-danger" href="<%= request.getContextPath() %>/reclamation?action=traiter&id=<%= reclamation.getId() %>&decision=rejete">Refuser</a>
+
+                        <form method="post" action="<%= request.getContextPath() %>/reclamation">
+                            <input type="hidden" name="action" value="traiter">
+                            <input type="hidden" name="id" value="<%= reclamation.getId() %>">
+                            <input type="hidden" name="decision" value="approuve">
+                            <input type="hidden" name="_csrf" value="<%= session.getAttribute("csrfToken") %>">
+                            <button class="btn btn-success" type="submit">Approuver</button>
+                        </form>
+
+                        <form method="post" action="<%= request.getContextPath() %>/reclamation">
+                            <input type="hidden" name="action" value="traiter">
+                            <input type="hidden" name="id" value="<%= reclamation.getId() %>">
+                            <input type="hidden" name="decision" value="rejete">
+                            <input type="hidden" name="_csrf" value="<%= session.getAttribute("csrfToken") %>">
+                            <button class="btn btn-danger" type="submit">Refuser</button>
+                        </form>
+
                     </div>
                 <% } %>
             </div>
         </div>
+
         <div class="col-lg-8">
             <div class="panel p-4">
                 <h2 class="h3 mb-3">Discussion</h2>
+
                 <div class="chat-box mb-3" style="max-height: 400px; overflow-y: auto;">
                     <% if (messages == null || messages.isEmpty()) { %>
                         <p class="text-muted">Aucun message.</p>
@@ -68,12 +89,20 @@
                         </div>
                     <% }} %>
                 </div>
+
                 <% if (!admin) { %>
                     <form method="post" action="<%= request.getContextPath() %>/reclamation?action=envoyer-message">
                         <input type="hidden" name="reclamationId" value="<%= reclamation.getId() %>">
+
                         <div class="mb-3">
                             <textarea class="form-control" name="contenu" rows="3" required placeholder="Écrire un message"></textarea>
                         </div>
+
+                        <input
+                            type="hidden"
+                            name="_csrf"
+                            value="<%= session.getAttribute("csrfToken") %>">
+
                         <button class="btn btn-primary" type="submit">Envoyer</button>
                     </form>
                 <% } %>
@@ -81,6 +110,8 @@
         </div>
     </div>
 </main>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
 </html>

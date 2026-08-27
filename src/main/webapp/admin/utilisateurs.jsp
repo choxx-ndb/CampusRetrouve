@@ -33,12 +33,59 @@
                     <td><%= u.getEmail() %></td>
                     <td><span class="badge badge-status"><%= u.getRole() %></span></td>
                     <td class="d-flex flex-wrap gap-2">
+
                         <% if ("user".equals(u.getRole())) { %>
-                            <a class="btn btn-sm btn-primary" href="<%= request.getContextPath() %>/admin?action=promouvoir&id=<%= u.getId() %>">Promouvoir</a>
+
+                            <form method="post"
+                                  action="<%= request.getContextPath() %>/admin">
+
+                                <input type="hidden" name="action" value="promouvoir">
+                                <input type="hidden" name="id" value="<%= u.getId() %>">
+                                <input type="hidden"
+                                       name="_csrf"
+                                       value="<%= session.getAttribute("csrfToken") %>">
+
+                                <button class="btn btn-sm btn-primary"
+                                        type="submit">
+                                    Promouvoir
+                                </button>
+                            </form>
+
                         <% } else { %>
-                            <a class="btn btn-sm btn-warning" href="<%= request.getContextPath() %>/admin?action=retrograder&id=<%= u.getId() %>">Rétrograder</a>
+
+                            <form method="post"
+                                  action="<%= request.getContextPath() %>/admin">
+
+                                <input type="hidden" name="action" value="retrograder">
+                                <input type="hidden" name="id" value="<%= u.getId() %>">
+                                <input type="hidden"
+                                       name="_csrf"
+                                       value="<%= session.getAttribute("csrfToken") %>">
+
+                                <button class="btn btn-sm btn-warning"
+                                        type="submit">
+                                    Rétrograder
+                                </button>
+                            </form>
+
                         <% } %>
-                        <a class="btn btn-sm btn-danger" onclick="return confirm('Supprimer cet utilisateur?')" href="<%= request.getContextPath() %>/admin?action=supprimer-user&id=<%= u.getId() %>">Supprimer</a>
+
+                        <form method="post"
+                              action="<%= request.getContextPath() %>/admin"
+                              onsubmit="return confirm('Supprimer cet utilisateur?')">
+
+                            <input type="hidden" name="action" value="supprimer-user">
+                            <input type="hidden" name="id" value="<%= u.getId() %>">
+                            <input type="hidden"
+                                   name="_csrf"
+                                   value="<%= session.getAttribute("csrfToken") %>">
+
+                            <button class="btn btn-sm btn-danger"
+                                    type="submit">
+                                Supprimer
+                            </button>
+                        </form>
+
                     </td>
                 </tr>
             <% } %>

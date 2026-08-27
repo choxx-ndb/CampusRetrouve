@@ -40,6 +40,10 @@
                         <label class="form-label">Message</label>
                         <textarea class="form-control" name="message" rows="7" required minlength="10"></textarea>
                     </div>
+                    <input
+                        type="hidden"
+                        name="_csrf"
+                        value="<%= session.getAttribute("csrfToken") %>">
                     <button class="btn btn-primary" type="submit">Envoyer la demande</button>
                 </form>
             </div>

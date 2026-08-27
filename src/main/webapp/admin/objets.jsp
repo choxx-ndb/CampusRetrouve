@@ -36,7 +36,21 @@
                     <td><span class="badge badge-status"><%= o.getStatus() %></span></td>
                     <td class="d-flex flex-wrap gap-2">
                         <a class="btn btn-sm btn-outline-primary" href="<%= request.getContextPath() %>/objet?action=detail&id=<%= o.getId() %>">Détails</a>
-                        <a class="btn btn-sm btn-danger" onclick="return confirm('Supprimer cette annonce?')" href="<%= request.getContextPath() %>/admin?action=supprimer-objet&id=<%= o.getId() %>">Supprimer</a>
+                        <form method="post"
+                              action="<%= request.getContextPath() %>/admin"
+                              onsubmit="return confirm('Supprimer cette annonce?')">
+
+                            <input type="hidden" name="action" value="supprimer-objet">
+                            <input type="hidden" name="id" value="<%= o.getId() %>">
+                            <input type="hidden"
+                                   name="_csrf"
+                                   value="<%= session.getAttribute("csrfToken") %>">
+
+                            <button class="btn btn-sm btn-danger"
+                                    type="submit">
+                                Supprimer
+                            </button>
+                        </form>
                     </td>
                 </tr>
             <% }} %>

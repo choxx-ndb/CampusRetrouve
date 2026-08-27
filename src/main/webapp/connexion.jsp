@@ -22,6 +22,10 @@
                 <label class="form-label">Email</label>
                 <input class="form-control" type="email" name="email" required>
             </div>
+            <input
+                type="hidden"
+                name="_csrf"
+                value="<%= session.getAttribute("csrfToken") %>">
             <div class="mb-3">
                 <label class="form-label">Mot de passe</label>
                 <input class="form-control" type="password" name="motdepass" required>
