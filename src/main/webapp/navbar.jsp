@@ -80,9 +80,28 @@
 
                             <li><hr class="dropdown-divider"></li>
                             <li>
-                                <a class="dropdown-item text-danger" href="<%= ctx %>/utilisateur?action=logout">
-                                    <i class="fa-solid fa-right-from-bracket me-2"></i>Déconnexion
-                                </a>
+                                <form
+                                    method="post"
+                                    action="<%= ctx %>/utilisateur">
+
+                                    <input
+                                        type="hidden"
+                                        name="action"
+                                        value="logout">
+
+                                    <input
+                                        type="hidden"
+                                        name="_csrf"
+                                        value="<%= session.getAttribute("csrfToken") %>">
+
+                                    <button
+                                        type="submit"
+                                        class="dropdown-item text-danger">
+
+                                        <i class="fa-solid fa-right-from-bracket me-2"></i>
+                                        Déconnexion
+                                    </button>
+                                </form>
                             </li>
                         </ul>
                     </li>
