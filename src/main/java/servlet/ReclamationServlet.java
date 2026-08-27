@@ -35,9 +35,6 @@ public class ReclamationServlet extends HttpServlet {
             case "detail":
                 afficherDetailDiscussion(request, response);
                 break;
-            case "traiter":
-                traiterReclamation(request, response);
-                break;
             default:
                 response.sendRedirect(request.getContextPath() + "/reclamation?action=mes-reclamations");
         }
@@ -55,6 +52,13 @@ public class ReclamationServlet extends HttpServlet {
             creerReclamation(request, response);
         } else if ("envoyer-message".equals(action)) {
             envoyerMessage(request, response);
+        } else if ("traiter".equals(action)) {
+
+            traiterReclamation(
+                    request,
+                    response
+            );
+
         } else {
             response.sendRedirect(request.getContextPath() + "/reclamation?action=mes-reclamations");
         }

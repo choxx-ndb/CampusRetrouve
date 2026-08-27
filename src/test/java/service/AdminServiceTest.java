@@ -131,11 +131,32 @@ class AdminServiceTest {
     }
 
     @Test
-    void shouldDemoteAdminToUser() {
-        adminService.retrograderEnUser(42);
+    void shouldDemoteAnotherAdminToUser() {
+        adminService.retrograderEnUser(42, 7);
 
         verify(utilisateurRepository)
                 .retrograderEnUser(42);
+    }
+
+    @Test
+    void shouldRejectDemotingCurrentAdmin() {
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> adminService.retrograderEnUser(
+                        42,
+                        42
+                )
+        );
+
+        verify(
+                utilisateurRepository,
+                never()
+        ).retrograderEnUser(anyInt());
+
+        verifyNoInteractions(
+                objetRepository,
+                reclamationRepository
+        );
     }
 
     @Test

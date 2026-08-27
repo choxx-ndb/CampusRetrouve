@@ -29,6 +29,10 @@
                 <label class="form-label">Mot de passe</label>
                 <input class="form-control" type="password" name="motdepass" required minlength="15" maxlength="72">
             </div>
+            <input
+                type="hidden"
+                name="_csrf"
+                value="<%= session.getAttribute("csrfToken") %>">
             <button class="btn btn-primary w-100" type="submit">S'inscrire</button>
         </form>
     </div>

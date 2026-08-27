@@ -92,8 +92,22 @@ public class AdminService {
         utilisateurRepository.promouvoirEnAdmin(utilisateurId);
     }
 
-    public void retrograderEnUser(int utilisateurId) {
-        utilisateurRepository.retrograderEnUser(utilisateurId);
+    public void retrograderEnUser(
+            int utilisateurId,
+            int adminCourantId) {
+
+        if (utilisateurId == adminCourantId) {
+
+            throw new IllegalArgumentException(
+                    "Vous ne pouvez pas "
+                            + "rétrograder votre propre compte."
+            );
+        }
+
+        utilisateurRepository
+                .retrograderEnUser(
+                        utilisateurId
+                );
     }
 
     public void supprimerUtilisateur(

@@ -48,6 +48,10 @@
                 <label class="form-label">Image</label>
                 <input class="form-control" type="file" name="image" accept="image/*">
             </div>
+            <input
+                type="hidden"
+                name="_csrf"
+                value="<%= session.getAttribute("csrfToken") %>">
             <button class="btn btn-primary w-100" type="submit">Publier</button>
         </form>
     </div>

@@ -61,11 +61,48 @@
                             <td><%= r.getDemandeurNom() %></td>
                             <td><span class="badge badge-status"><%= r.getStatus() %></span></td>
                             <td class="d-flex flex-wrap gap-2">
-                                <a class="btn btn-sm btn-outline-primary" href="<%= request.getContextPath() %>/reclamation?action=detail&id=<%= r.getId() %>">Discussion</a>
+
+                                <a class="btn btn-sm btn-outline-primary"
+                                   href="<%= request.getContextPath() %>/reclamation?action=detail&id=<%= r.getId() %>">
+                                    Discussion
+                                </a>
+
                                 <% if ("en_attente".equals(r.getStatus())) { %>
-                                    <a class="btn btn-sm btn-success" href="<%= request.getContextPath() %>/reclamation?action=traiter&id=<%= r.getId() %>&decision=approuve">Approuver</a>
-                                    <a class="btn btn-sm btn-danger" href="<%= request.getContextPath() %>/reclamation?action=traiter&id=<%= r.getId() %>&decision=rejete">Refuser</a>
+
+                                    <form method="post"
+                                          action="<%= request.getContextPath() %>/reclamation">
+
+                                        <input type="hidden" name="action" value="traiter">
+                                        <input type="hidden" name="id" value="<%= r.getId() %>">
+                                        <input type="hidden" name="decision" value="approuve">
+                                        <input type="hidden"
+                                               name="_csrf"
+                                               value="<%= session.getAttribute("csrfToken") %>">
+
+                                        <button class="btn btn-sm btn-success"
+                                                type="submit">
+                                            Approuver
+                                        </button>
+                                    </form>
+
+                                    <form method="post"
+                                          action="<%= request.getContextPath() %>/reclamation">
+
+                                        <input type="hidden" name="action" value="traiter">
+                                        <input type="hidden" name="id" value="<%= r.getId() %>">
+                                        <input type="hidden" name="decision" value="rejete">
+                                        <input type="hidden"
+                                               name="_csrf"
+                                               value="<%= session.getAttribute("csrfToken") %>">
+
+                                        <button class="btn btn-sm btn-danger"
+                                                type="submit">
+                                            Refuser
+                                        </button>
+                                    </form>
+
                                 <% } %>
+
                             </td>
                         </tr>
                     <% }} %>
