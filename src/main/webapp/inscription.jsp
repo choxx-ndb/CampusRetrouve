@@ -1,4 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page import="org.owasp.encoder.Encode" %>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -15,15 +16,27 @@
 <main class="container py-5 narrow-page">
     <div class="form-card p-4">
         <h1 class="h3 mb-4"><i class="fa-solid fa-user-plus me-2 text-orange"></i>Créer un compte</h1>
-        <% if (request.getAttribute("erreur") != null) { %><div class="alert alert-danger"><%= request.getAttribute("erreur") %></div><% } %>
+        <% if (request.getAttribute("erreur") != null) { %><div class="alert alert-danger"><%= Encode.forHtml(request.getAttribute("erreur").toString()) %></div><% } %>
         <form method="post" action="<%= request.getContextPath() %>/utilisateur?action=inscrire">
             <div class="mb-3">
                 <label class="form-label">Nom</label>
-                <input class="form-control" type="text" name="nom" value="<%= request.getAttribute("nom") == null ? "" : request.getAttribute("nom") %>" required minlength="3">
+                <input class="form-control" type="text" name="nom"
+                       value="<%= Encode.forHtmlAttribute(
+                               request.getAttribute("nom") == null
+                                       ? ""
+                                       : request.getAttribute("nom").toString()
+                       ) %>"
+                       required minlength="3">
             </div>
             <div class="mb-3">
                 <label class="form-label">Email</label>
-                <input class="form-control" type="email" name="email" value="<%= request.getAttribute("email") == null ? "" : request.getAttribute("email") %>" required>
+                <input class="form-control" type="email" name="email"
+                       value="<%= Encode.forHtmlAttribute(
+                               request.getAttribute("email") == null
+                                       ? ""
+                                       : request.getAttribute("email").toString()
+                       ) %>"
+                       required>
             </div>
             <div class="mb-3">
                 <label class="form-label">Mot de passe</label>

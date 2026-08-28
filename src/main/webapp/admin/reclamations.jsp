@@ -1,4 +1,5 @@
 <%@ page import="java.util.List" %>
+<%@ page import="org.owasp.encoder.Encode" %>
 <%@ page import="modele.Reclamation" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%
@@ -39,10 +40,10 @@
                 <tr><td colspan="5" class="text-muted">Aucune réclamation.</td></tr>
             <% } else { for (Reclamation r : reclamations) { %>
                 <tr>
-                    <td><%= r.getObjetTitre() %></td>
-                    <td><%= r.getDemandeurNom() %></td>
-                    <td><%= r.getProprietaireNom() %></td>
-                    <td><span class="badge badge-status"><%= r.getStatus() %></span></td>
+                    <td><%= Encode.forHtml(r.getObjetTitre()) %></td>
+                    <td><%= Encode.forHtml(r.getDemandeurNom()) %></td>
+                    <td><%= Encode.forHtml(r.getProprietaireNom()) %></td>
+                    <td><span class="badge badge-status"><%= Encode.forHtml(r.getStatus()) %></span></td>
                     <td><a class="btn btn-sm btn-outline-primary" href="<%= request.getContextPath() %>/reclamation?action=detail&id=<%= r.getId() %>">Voir le tchat</a></td>
                 </tr>
             <% }} %>

@@ -1,4 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page import="org.owasp.encoder.Encode" %>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -21,7 +22,7 @@
 <main class="container pb-5 narrow-page">
     <div class="form-card p-4">
         <h2 class="h4 mb-4">Informations de l'objet</h2>
-        <% if (request.getAttribute("erreur") != null) { %><div class="alert alert-danger"><%= request.getAttribute("erreur") %></div><% } %>
+        <% if (request.getAttribute("erreur") != null) { %><div class="alert alert-danger"><%= Encode.forHtml(request.getAttribute("erreur").toString()) %></div><% } %>
         <form method="post" enctype="multipart/form-data" action="<%= request.getContextPath() %>/objet?action=ajouter">
             <div class="mb-3">
                 <label class="form-label">Titre</label>

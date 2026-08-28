@@ -1,4 +1,5 @@
 <%@ page import="java.util.List" %>
+<%@ page import="org.owasp.encoder.Encode" %>
 <%@ page import="modele.Utilisateur" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <% List<Utilisateur> utilisateurs = (List<Utilisateur>) request.getAttribute("utilisateurs"); %>
@@ -29,9 +30,9 @@
             <% for (Utilisateur u : utilisateurs) { %>
                 <tr>
                     <td><%= u.getId() %></td>
-                    <td><%= u.getNom() %></td>
-                    <td><%= u.getEmail() %></td>
-                    <td><span class="badge badge-status"><%= u.getRole() %></span></td>
+                    <td><%= Encode.forHtml(u.getNom()) %></td>
+                    <td><%= Encode.forHtml(u.getEmail()) %></td>
+                    <td><span class="badge badge-status"><%= Encode.forHtml(u.getRole()) %></span></td>
                     <td class="d-flex flex-wrap gap-2">
 
                         <% if ("user".equals(u.getRole())) { %>

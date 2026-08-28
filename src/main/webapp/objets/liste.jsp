@@ -1,6 +1,7 @@
 <%@ page import="java.util.List" %>
 <%@ page import="modele.Objet" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page import="org.owasp.encoder.Encode" %>
 <%
     // Forcer le décodage correct des accents (ex: Annonce publiée)
     request.setCharacterEncoding("UTF-8");
@@ -46,18 +47,18 @@
         <% } else { for (Objet objet : objets) { %>
             <div class="col-md-6 col-xl-4">
                 <div class="card object-card accent-card h-100">
-                    <img src="<%= request.getContextPath() %>/<%= objet.getImagePath() %>" 
+                    <img src="<%= request.getContextPath() %>/<%= Encode.forHtmlAttribute(objet.getImagePath()) %>"
                          class="card-img-top object-image" 
                          alt="Image objet"
                          onerror="this.src='https://placehold.co/300x200?text=Image+.jpeg+Introuvable'">
                     <div class="card-body d-flex flex-column">
                         <div class="d-flex justify-content-between gap-2 mb-2">
-                            <span class="badge <%= "perdue".equals(objet.getType()) ? "text-bg-danger" : "text-bg-success" %>"><%= objet.getType() %></span>
-                            <span class="badge badge-status"><%= objet.getStatus() %></span>
+                            <span class="badge <%= "perdue".equals(objet.getType()) ? "text-bg-danger" : "text-bg-success" %>"><%= Encode.forHtml(objet.getType()) %></span>
+                            <span class="badge badge-status"><%= Encode.forHtml(objet.getStatus()) %></span>
                         </div>
-                        <h2 class="h5"><%= objet.getTitre() %></h2>
-                        <p class="text-muted small flex-grow-1"><%= objet.getDescription() %></p>
-                        <p class="small mb-3"><strong>Lieu:</strong> <%= objet.getLocalisation() %></p>
+                        <h2 class="h5"><%= Encode.forHtml(objet.getTitre()) %></h2>
+                        <p class="text-muted small flex-grow-1"><%= Encode.forHtml(objet.getDescription()) %></p>
+                        <p class="small mb-3"><strong>Lieu:</strong> <%= Encode.forHtml(objet.getLocalisation()) %></p>
                         <a class="btn btn-outline-primary mt-auto" href="<%= request.getContextPath() %>/objet?action=detail&id=<%= objet.getId() %>">Voir détails</a>
                     </div>
                 </div>
