@@ -1,4 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page import="org.owasp.encoder.Encode" %>
 <%
     String ctx = request.getContextPath();
     Object userId = session.getAttribute("userId");
@@ -39,7 +40,7 @@
                 <% if (userId != null && userName != null) { %>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fa-solid fa-circle-user me-1"></i><%= userName %>
+                            <i class="fa-solid fa-circle-user me-1"></i><%= Encode.forHtml(userName) %>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">
                             <li>

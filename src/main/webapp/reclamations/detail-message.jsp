@@ -1,4 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page import="org.owasp.encoder.Encode" %>
 <%@ page import="java.util.List" %>
 <%@ page import="modele.MessageReclamation" %>
 <%@ page import="modele.Objet" %>
@@ -41,12 +42,15 @@
     <div class="row g-4">
         <div class="col-lg-4">
             <div class="panel accent-card p-4">
-                <img class="detail-image mb-3" src="<%= request.getContextPath() %>/<%= objet.getImagePath() %>" alt="Objet" onerror="this.src='https://placehold.co/300x200?text=Pas+d+image'">
-                <h1 class="h4"><%= objet.getTitre() %></h1>
-                <p class="text-muted"><%= objet.getDescription() %></p>
-                <p><strong>Lieu:</strong> <%= objet.getLocalisation() %></p>
-                <p><strong>Propriétaire:</strong> <%= reclamation.getProprietaireNom() %></p>
-                <p><strong>Statut:</strong> <span class="badge bg-warning text-dark"><%= reclamation.getStatus() %></span></p>
+                <img class="detail-image mb-3"
+                     src="<%= request.getContextPath() %>/<%= Encode.forHtmlAttribute(objet.getImagePath()) %>"
+                     alt="Objet"
+                     onerror="this.src='https://placehold.co/300x200?text=Pas+d+image'">
+                <h1 class="h4"><%= Encode.forHtml(objet.getTitre()) %></h1>
+                <p class="text-muted"><%= Encode.forHtml(objet.getDescription()) %></p>
+                <p><strong>Lieu:</strong> <%= Encode.forHtml(objet.getLocalisation()) %></p>
+                <p><strong>Propriétaire:</strong> <%= Encode.forHtml(reclamation.getProprietaireNom()) %></p>
+                <p><strong>Statut:</strong> <span class="badge bg-warning text-dark"><%= Encode.forHtml(reclamation.getStatus()) %></span></p>
 
                 <% if (proprietaire && "en_attente".equals(reclamation.getStatus())) { %>
                     <div class="d-grid gap-2">
@@ -82,8 +86,8 @@
                     <% } else { for (MessageReclamation m : messages) { boolean mine = userId != null && userId == m.getExpediteurId(); %>
                         <div class="message-row <%= mine ? "mine" : "" %>">
                             <div class="message-bubble">
-                                <div class="small fw-semibold"><%= m.getExpediteurNom() %></div>
-                                <div><%= m.getContenu() %></div>
+                                <div class="small fw-semibold"><%= Encode.forHtml(m.getExpediteurNom()) %></div>
+                                <div><%= Encode.forHtml(m.getContenu()) %></div>
                                 <div class="small opacity-75 mt-1"><%= m.getDateEnvoi() %></div>
                             </div>
                         </div>

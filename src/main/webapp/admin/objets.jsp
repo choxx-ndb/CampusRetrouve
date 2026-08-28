@@ -1,4 +1,5 @@
 <%@ page import="java.util.List" %>
+<%@ page import="org.owasp.encoder.Encode" %>
 <%@ page import="modele.Objet" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <% List<Objet> objets = (List<Objet>) request.getAttribute("objets"); %>
@@ -30,10 +31,10 @@
                 <tr><td colspan="5" class="text-muted">Aucun objet.</td></tr>
             <% } else { for (Objet o : objets) { %>
                 <tr>
-                    <td><%= o.getTitre() %></td>
-                    <td><%= o.getProprietaireNom() %></td>
-                    <td><%= o.getType() %></td>
-                    <td><span class="badge badge-status"><%= o.getStatus() %></span></td>
+                    <td><%= Encode.forHtml(o.getTitre()) %></td>
+                    <td><%= Encode.forHtml(o.getProprietaireNom()) %></td>
+                    <td><%= Encode.forHtml(o.getType()) %></td>
+                    <td><span class="badge badge-status"><%= Encode.forHtml(o.getStatus()) %></span></td>
                     <td class="d-flex flex-wrap gap-2">
                         <a class="btn btn-sm btn-outline-primary" href="<%= request.getContextPath() %>/objet?action=detail&id=<%= o.getId() %>">Détails</a>
                         <form method="post"

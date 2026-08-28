@@ -1,4 +1,5 @@
 <%@ page import="modele.Objet" %>
+<%@ page import="org.owasp.encoder.Encode" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <% Objet objet = (Objet) request.getAttribute("objet"); Integer userId = (Integer) session.getAttribute("userId"); %>
 <!DOCTYPE html>
@@ -26,17 +27,19 @@
     <% } else { %>
         <div class="row g-4">
             <div class="col-lg-6">
-                <img class="detail-image" src="<%= request.getContextPath() %>/<%= objet.getImagePath() %>" alt="Image objet">
+                <img class="detail-image"
+                     src="<%= request.getContextPath() %>/<%= Encode.forHtmlAttribute(objet.getImagePath()) %>"
+                     alt="Image objet">
             </div>
             <div class="col-lg-6">
                 <div class="panel accent-card p-4">
-                    <span class="badge <%= "perdue".equals(objet.getType()) ? "text-bg-danger" : "text-bg-success" %> mb-2"><%= objet.getType() %></span>
-                    <h1 class="h2"><%= objet.getTitre() %></h1>
-                    <p class="text-muted"><%= objet.getDescription() %></p>
+                    <span class="badge <%= "perdue".equals(objet.getType()) ? "text-bg-danger" : "text-bg-success" %> mb-2"><%= Encode.forHtml(objet.getType()) %></span>
+                    <h1 class="h2"><%= Encode.forHtml(objet.getTitre()) %></h1>
+                    <p class="text-muted"><%= Encode.forHtml(objet.getDescription()) %></p>
                     <dl class="row">
-                        <dt class="col-sm-4">Localisation</dt><dd class="col-sm-8"><%= objet.getLocalisation() %></dd>
-                        <dt class="col-sm-4">Statut</dt><dd class="col-sm-8"><span class="badge badge-status"><%= objet.getStatus() %></span></dd>
-                        <dt class="col-sm-4">Publié par</dt><dd class="col-sm-8"><%= objet.getProprietaireNom() %></dd>
+                        <dt class="col-sm-4">Localisation</dt><dd class="col-sm-8"><%= Encode.forHtml(objet.getLocalisation()) %></dd>
+                        <dt class="col-sm-4">Statut</dt><dd class="col-sm-8"><span class="badge badge-status"><%= Encode.forHtml(objet.getStatus()) %></span></dd>
+                        <dt class="col-sm-4">Publié par</dt><dd class="col-sm-8"><%= Encode.forHtml(objet.getProprietaireNom()) %></dd>
                     </dl>
                     <% if (userId == null) { %>
                         <a class="btn btn-primary" href="<%= request.getContextPath() %>/utilisateur?action=connexion">Se connecter pour réclamer</a>

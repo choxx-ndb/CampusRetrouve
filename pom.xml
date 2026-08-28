@@ -46,6 +46,12 @@
 		    <artifactId>bcrypt</artifactId>
 		    <version>0.10.2</version>
 		</dependency>
+		<!-- Contextual output encoding against XSS -->
+		<dependency>
+		    <groupId>org.owasp.encoder</groupId>
+		    <artifactId>encoder</artifactId>
+		    <version>1.4.0</version>
+		</dependency>
 		<!-- Tests unitaires avec JUnit 5. -->
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>

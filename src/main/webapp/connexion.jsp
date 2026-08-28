@@ -1,4 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page import="org.owasp.encoder.Encode" %>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -15,8 +16,13 @@
 <main class="container py-5 narrow-page">
     <div class="form-card p-4">
         <h1 class="h3 mb-4"><i class="fa-solid fa-right-to-bracket me-2 text-orange"></i>Connexion</h1>
-        <% if (request.getAttribute("erreur") != null) { %><div class="alert alert-danger"><%= request.getAttribute("erreur") %></div><% } %>
-        <% if (request.getAttribute("success") != null) { %><div class="alert alert-success"><%= request.getAttribute("success") %></div><% } %>
+        <% if (request.getAttribute("erreur") != null) { %>
+            <div class="alert alert-danger"><%= Encode.forHtml(request.getAttribute("erreur").toString()) %></div>
+        <% } %>
+
+        <% if (request.getAttribute("success") != null) { %>
+            <div class="alert alert-success"><%= Encode.forHtml(request.getAttribute("success").toString()) %></div>
+        <% } %>
         <form method="post" action="<%= request.getContextPath() %>/utilisateur?action=authentifier">
             <div class="mb-3">
                 <label class="form-label">Email</label>

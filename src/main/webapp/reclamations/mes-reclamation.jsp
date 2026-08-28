@@ -1,4 +1,5 @@
 <%@ page import="java.util.List" %>
+<%@ page import="org.owasp.encoder.Encode" %>
 <%@ page import="modele.Reclamation" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%
@@ -39,8 +40,8 @@
                         <tr><td colspan="3" class="text-muted">Aucune demande envoyée.</td></tr>
                     <% } else { for (Reclamation r : envoyees) { %>
                         <tr>
-                            <td><%= r.getObjetTitre() %></td>
-                            <td><span class="badge badge-status"><%= r.getStatus() %></span></td>
+                            <td><%= Encode.forHtml(r.getObjetTitre()) %></td>
+                            <td><span class="badge badge-status"><%= Encode.forHtml(r.getStatus()) %></span></td>
                             <td><a class="btn btn-sm btn-outline-primary" href="<%= request.getContextPath() %>/reclamation?action=detail&id=<%= r.getId() %>">Ouvrir la discussion</a></td>
                         </tr>
                     <% }} %>
@@ -57,9 +58,9 @@
                         <tr><td colspan="4" class="text-muted">Aucune demande reçue.</td></tr>
                     <% } else { for (Reclamation r : recues) { %>
                         <tr>
-                            <td><%= r.getObjetTitre() %></td>
-                            <td><%= r.getDemandeurNom() %></td>
-                            <td><span class="badge badge-status"><%= r.getStatus() %></span></td>
+                            <td><%= Encode.forHtml(r.getObjetTitre()) %></td>
+                            <td><%= Encode.forHtml(r.getDemandeurNom()) %></td>
+                            <td><span class="badge badge-status"><%= Encode.forHtml(r.getStatus()) %></span></td>
                             <td class="d-flex flex-wrap gap-2">
 
                                 <a class="btn btn-sm btn-outline-primary"

@@ -1,4 +1,5 @@
 <%@ page import="modele.Objet" %>
+<%@ page import="org.owasp.encoder.Encode" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <% Objet objet = (Objet) request.getAttribute("objet"); %>
 <!DOCTYPE html>
@@ -21,14 +22,16 @@
     </div>
 </header>
 <main class="container pb-5">
-    <% if (request.getAttribute("erreur") != null) { %><div class="alert alert-danger"><%= request.getAttribute("erreur") %></div><% } %>
+    <% if (request.getAttribute("erreur") != null) { %><div class="alert alert-danger"><%= Encode.forHtml(request.getAttribute("erreur").toString()) %></div><% } %>
     <div class="row g-4">
         <div class="col-lg-5">
             <div class="panel accent-card p-4">
-                <img class="detail-image mb-3" src="<%= request.getContextPath() %>/<%= objet.getImagePath() %>" alt="Objet">
-                <h1 class="h4"><%= objet.getTitre() %></h1>
-                <p class="text-muted"><%= objet.getDescription() %></p>
-                <p class="mb-0"><strong>Lieu:</strong> <%= objet.getLocalisation() %></p>
+                <img class="detail-image mb-3"
+                     src="<%= request.getContextPath() %>/<%= Encode.forHtmlAttribute(objet.getImagePath()) %>"
+                     alt="Objet">
+                <h1 class="h4"><%= Encode.forHtml(objet.getTitre()) %></h1>
+                <p class="text-muted"><%= Encode.forHtml(objet.getDescription()) %></p>
+                <p class="mb-0"><strong>Lieu:</strong> <%= Encode.forHtml(objet.getLocalisation()) %></p>
             </div>
         </div>
         <div class="col-lg-7">
