@@ -1,5 +1,26 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="org.owasp.encoder.Encode" %>
+<%
+    String titre =
+            request.getAttribute("titre") == null
+                    ? ""
+                    : request.getAttribute("titre").toString();
+
+    String description =
+            request.getAttribute("description") == null
+                    ? ""
+                    : request.getAttribute("description").toString();
+
+    String type =
+            request.getAttribute("type") == null
+                    ? ""
+                    : request.getAttribute("type").toString();
+
+    String localisation =
+            request.getAttribute("localisation") == null
+                    ? ""
+                    : request.getAttribute("localisation").toString();
+%>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -22,42 +43,86 @@
 <main class="container pb-5 narrow-page">
     <div class="form-card p-4">
         <h2 class="h4 mb-4">Informations de l'objet</h2>
-        <% if (request.getAttribute("erreur") != null) { %><div class="alert alert-danger"><%= Encode.forHtml(request.getAttribute("erreur").toString()) %></div><% } %>
-        <form method="post" enctype="multipart/form-data" action="<%= request.getContextPath() %>/objet?action=ajouter">
+
+        <% if (request.getAttribute("erreur") != null) { %>
+            <div class="alert alert-danger">
+                <%= Encode.forHtml(request.getAttribute("erreur").toString()) %>
+            </div>
+        <% } %>
+
+        <form method="post"
+              enctype="multipart/form-data"
+              action="<%= request.getContextPath() %>/objet?action=ajouter">
+
             <div class="mb-3">
                 <label class="form-label">Titre</label>
-                <input class="form-control" name="titre" required minlength="3">
+                <input
+                    class="form-control"
+                    name="titre"
+                    value="<%= Encode.forHtmlAttribute(titre) %>"
+                    required
+                    minlength="3"
+                    maxlength="255">
             </div>
+
             <div class="mb-3">
                 <label class="form-label">Description</label>
-                <textarea class="form-control" name="description" rows="4"></textarea>
+                <textarea
+                    class="form-control"
+                    name="description"
+                    rows="4"
+                    maxlength="2000"><%= Encode.forHtml(description) %></textarea>
             </div>
+
             <div class="mb-3">
                 <label class="form-label d-block">Type</label>
                 <div class="btn-group" role="group">
-                    <input class="btn-check" type="radio" name="type" id="typePerdue" value="perdue" required>
+                    <input
+                        class="btn-check"
+                        type="radio"
+                        name="type"
+                        id="typePerdue"
+                        value="perdue"
+                        <%= "perdue".equals(type) ? "checked" : "" %>
+                        required>
                     <label class="btn btn-outline-primary" for="typePerdue">Perdu</label>
-                    <input class="btn-check" type="radio" name="type" id="typeTrouve" value="trouve" required>
+
+                    <input
+                        class="btn-check"
+                        type="radio"
+                        name="type"
+                        id="typeTrouve"
+                        value="trouve"
+                        <%= "trouve".equals(type) ? "checked" : "" %>
+                        required>
                     <label class="btn btn-outline-primary" for="typeTrouve">Trouvé</label>
                 </div>
             </div>
+
             <div class="mb-3">
                 <label class="form-label">Localisation</label>
-                <input class="form-control" name="localisation">
+                <input
+                    class="form-control"
+                    name="localisation"
+                    value="<%= Encode.forHtmlAttribute(localisation) %>"
+                    maxlength="255">
             </div>
+
             <div class="mb-4">
                 <label class="form-label">Image</label>
                 <input class="form-control" type="file" name="image" accept="image/*">
             </div>
+
             <input
                 type="hidden"
                 name="_csrf"
                 value="<%= session.getAttribute("csrfToken") %>">
+
             <button class="btn btn-primary w-100" type="submit">Publier</button>
         </form>
     </div>
 </main>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
-

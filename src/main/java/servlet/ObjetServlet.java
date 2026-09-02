@@ -91,9 +91,43 @@ public class ObjetServlet extends HttpServlet {
             objetService.publierAnnonce(objet);
             response.sendRedirect(request.getContextPath() + "/objet?action=liste&success=Annonce publiÃ©e");
         } catch (IllegalArgumentException ex) {
-            request.setAttribute("erreur", ex.getMessage());
-            forward(request, response, "/objets/ajouter.jsp");
+            request.setAttribute(
+                    "erreur",
+                    ex.getMessage()
+            );
+
+            conserverValeursFormulaire(request);
+
+            forward(
+                    request,
+                    response,
+                    "/objets/ajouter.jsp"
+            );
         }
+    }
+
+    private void conserverValeursFormulaire(
+            HttpServletRequest request) {
+
+        request.setAttribute(
+                "titre",
+                request.getParameter("titre")
+        );
+
+        request.setAttribute(
+                "description",
+                request.getParameter("description")
+        );
+
+        request.setAttribute(
+                "type",
+                request.getParameter("type")
+        );
+
+        request.setAttribute(
+                "localisation",
+                request.getParameter("localisation")
+        );
     }
 
     private String uploadImage(Part part) throws IOException {
