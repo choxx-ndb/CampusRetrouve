@@ -75,9 +75,43 @@ public class ObjetDAO implements CommonDAO<Objet>, ObjetRepository {
     public List<Objet> findByType(String type) {
         return queryList("SELECT o.*, u.nom AS proprietaire_nom FROM objets o JOIN utilisateurs u ON u.id = o.proprietaire_id WHERE o.type = ? ORDER BY o.created_at DESC", type);
     }
-
+    @Override
     public List<Objet> findByUserId(int proprietaireId) {
         return queryList("SELECT o.*, u.nom AS proprietaire_nom FROM objets o JOIN utilisateurs u ON u.id = o.proprietaire_id WHERE o.proprietaire_id = ? ORDER BY o.created_at DESC", proprietaireId);
+    }
+    @Override
+    public void updateContent(Objet objet) {
+
+        String sql =
+                "UPDATE objets "
+                        + "SET titre = ?, "
+                        + "description = ?, "
+                        + "type = ?, "
+                        + "localisation = ? "
+                        + "WHERE id = ?";
+
+        try (Connection connection =
+                     DBConnection.getConnection();
+
+             PreparedStatement ps =
+                     connection.prepareStatement(sql)) {
+
+            ps.setString(1, objet.getTitre());
+            ps.setString(2, objet.getDescription());
+            ps.setString(3, objet.getType());
+            ps.setString(4, objet.getLocalisation());
+            ps.setInt(5, objet.getId());
+
+            ps.executeUpdate();
+
+        } catch (SQLException e) {
+
+            throw new RuntimeException(
+                    "Erreur lors de la mise à jour "
+                            + "du contenu de l'objet",
+                    e
+            );
+        }
     }
     @Override
     public void updateStatus(int objetId, String status) {
