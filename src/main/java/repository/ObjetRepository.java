@@ -16,6 +16,10 @@ public interface ObjetRepository {
 
     List<Objet> findByType(String type);
 
+    List<Objet> findByUserId(int proprietaireId);
+
+    void updateContent(Objet objet);
+
     void updateStatus(int objetId, String status);
 
     int countAll();

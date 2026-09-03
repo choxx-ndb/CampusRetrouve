@@ -49,6 +49,14 @@
                                 </a>
                             </li>
                             <li>
+							    <a
+							        class="dropdown-item"
+							        href="<%= ctx %>/objet?action=mes-annonces">
+							        <i class="fa-solid fa-box me-2"></i>
+							        Mes annonces
+							    </a>
+							</li>
+                            <li>
                                 <a class="dropdown-item" href="<%= ctx %>/reclamation?action=mes-reclamations">
                                     <i class="fa-solid fa-clipboard-list me-2"></i>Mes réclamations
                                 </a>
