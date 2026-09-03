@@ -54,8 +54,78 @@ public class ObjetService {
         return objetRepository.findByType(type);
     }
 
+    public List<Objet> recupererParProprietaire(
+            int proprietaireId) {
+
+        if (proprietaireId <= 0) {
+            throw new IllegalArgumentException(
+                    "Utilisateur invalide."
+            );
+        }
+
+        return objetRepository.findByUserId(
+                proprietaireId
+        );
+    }
+
     public Objet recupererParId(int id) {
         return objetRepository.getById(id);
+    }
+
+    public Objet recupererAnnoncePourModification(
+            int objetId,
+            int utilisateurId) {
+
+        Objet objet =
+                recupererAnnoncePossedee(
+                        objetId,
+                        utilisateurId
+                );
+
+        verifierDisponiblePourGestion(objet);
+
+        return objet;
+    }
+
+    public void modifierAnnonce(
+            int objetId,
+            int utilisateurId,
+            String titre,
+            String description,
+            String type,
+            String localisation) {
+
+        Objet objet =
+                recupererAnnoncePossedee(
+                        objetId,
+                        utilisateurId
+                );
+
+        verifierDisponiblePourGestion(objet);
+
+        objet.setTitre(titre);
+        objet.setDescription(description);
+        objet.setType(type);
+        objet.setLocalisation(localisation);
+
+        validerEtNormaliser(objet);
+
+        objetRepository.updateContent(objet);
+    }
+
+    public void supprimerAnnonce(
+            int objetId,
+            int utilisateurId) {
+
+        Objet objet =
+                recupererAnnoncePossedee(
+                        objetId,
+                        utilisateurId
+                );
+
+        verifierDisponiblePourGestion(objet);
+
+        objetRepository.delete(objetId);
     }
 
     public void supprimer(int id) {
@@ -79,6 +149,47 @@ public class ObjetService {
                 id,
                 status
         );
+    }
+
+    private Objet recupererAnnoncePossedee(
+            int objetId,
+            int utilisateurId) {
+
+        if (objetId <= 0
+                || utilisateurId <= 0) {
+
+            throw new IllegalArgumentException(
+                    "Annonce introuvable ou accès refusé."
+            );
+        }
+
+        Objet objet =
+                objetRepository.getById(objetId);
+
+        if (objet == null
+                || objet.getProprietaireId()
+                        != utilisateurId) {
+
+            throw new IllegalArgumentException(
+                    "Annonce introuvable ou accès refusé."
+            );
+        }
+
+        return objet;
+    }
+
+    private void verifierDisponiblePourGestion(
+            Objet objet) {
+
+        if (!"disponible".equals(
+                objet.getStatus())) {
+
+            throw new IllegalArgumentException(
+                    "Seule une annonce disponible "
+                            + "peut être modifiée "
+                            + "ou supprimée."
+            );
+        }
     }
 
     private void validerEtNormaliser(
