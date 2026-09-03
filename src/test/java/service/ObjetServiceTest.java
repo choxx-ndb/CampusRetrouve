@@ -289,4 +289,253 @@ class ObjetServiceTest {
 
         verify(objetRepository).add(objet);
     }
+    @Test
+    void shouldFindItemsOwnedByUser() {
+
+        List<Objet> objets = List.of(new Objet());
+
+        when(objetRepository.findByUserId(7))
+                .thenReturn(objets);
+
+        List<Objet> resultat =
+                objetService.recupererParProprietaire(7);
+
+        assertSame(objets, resultat);
+
+        verify(objetRepository).findByUserId(7);
+    }
+
+    @Test
+    void shouldRejectInvalidOwnerIdWhenListingOwnedItems() {
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> objetService
+                        .recupererParProprietaire(0)
+        );
+
+        verifyNoInteractions(objetRepository);
+    }
+
+    @Test
+    void shouldReturnOwnedAvailableItemForEditing() {
+
+        Objet objet = new Objet();
+        objet.setId(42);
+        objet.setProprietaireId(7);
+        objet.setStatus("disponible");
+
+        when(objetRepository.getById(42))
+                .thenReturn(objet);
+
+        Objet resultat =
+                objetService
+                        .recupererAnnoncePourModification(
+                                42,
+                                7
+                        );
+
+        assertSame(objet, resultat);
+
+        verify(objetRepository).getById(42);
+    }
+
+    @Test
+    void shouldRejectEditingAnotherUsersItem() {
+
+        Objet objet = new Objet();
+        objet.setId(42);
+        objet.setProprietaireId(8);
+        objet.setStatus("disponible");
+
+        when(objetRepository.getById(42))
+                .thenReturn(objet);
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> objetService
+                        .recupererAnnoncePourModification(
+                                42,
+                                7
+                        )
+        );
+
+        verify(objetRepository).getById(42);
+    }
+
+    @Test
+    void shouldRejectEditingNonAvailableItem() {
+
+        Objet objet = new Objet();
+        objet.setId(42);
+        objet.setProprietaireId(7);
+        objet.setStatus("reclame");
+
+        when(objetRepository.getById(42))
+                .thenReturn(objet);
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> objetService
+                        .recupererAnnoncePourModification(
+                                42,
+                                7
+                        )
+        );
+
+        verify(objetRepository).getById(42);
+    }
+
+    @Test
+    void shouldUpdateOwnedAvailableItemAndPreserveProtectedFields() {
+
+        Objet objet = new Objet(
+                "Ancien titre",
+                "Ancienne description",
+                "perdue",
+                "Ancienne localisation",
+                "uploads/old.jpg",
+                7
+        );
+
+        objet.setId(42);
+        objet.setStatus("disponible");
+
+        when(objetRepository.getById(42))
+                .thenReturn(objet);
+
+        objetService.modifierAnnonce(
+                42,
+                7,
+                " Nouveau titre ",
+                " Nouvelle description ",
+                " trouve ",
+                " Nouvelle localisation "
+        );
+
+        assertAll(
+                () -> assertEquals(
+                        "Nouveau titre",
+                        objet.getTitre()
+                ),
+                () -> assertEquals(
+                        "Nouvelle description",
+                        objet.getDescription()
+                ),
+                () -> assertEquals(
+                        "trouve",
+                        objet.getType()
+                ),
+                () -> assertEquals(
+                        "Nouvelle localisation",
+                        objet.getLocalisation()
+                ),
+                () -> assertEquals(
+                        "uploads/old.jpg",
+                        objet.getImagePath()
+                ),
+                () -> assertEquals(
+                        "disponible",
+                        objet.getStatus()
+                ),
+                () -> assertEquals(
+                        7,
+                        objet.getProprietaireId()
+                )
+        );
+
+        verify(objetRepository).updateContent(objet);
+    }
+
+    @Test
+    void shouldRejectInvalidEditedFieldsWithoutUpdating() {
+
+        Objet objet = new Objet(
+                "Ancien titre",
+                "Description",
+                "perdue",
+                "Bibliothèque",
+                "uploads/old.jpg",
+                7
+        );
+
+        objet.setId(42);
+        objet.setStatus("disponible");
+
+        when(objetRepository.getById(42))
+                .thenReturn(objet);
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> objetService.modifierAnnonce(
+                        42,
+                        7,
+                        "ab",
+                        "Description",
+                        "perdue",
+                        "Bibliothèque"
+                )
+        );
+
+        verify(objetRepository, never())
+                .updateContent(objet);
+    }
+
+    @Test
+    void shouldDeleteOwnedAvailableItem() {
+
+        Objet objet = new Objet();
+        objet.setId(42);
+        objet.setProprietaireId(7);
+        objet.setStatus("disponible");
+
+        when(objetRepository.getById(42))
+                .thenReturn(objet);
+
+        objetService.supprimerAnnonce(42, 7);
+
+        verify(objetRepository).delete(42);
+    }
+
+    @Test
+    void shouldRejectDeletingAnotherUsersItem() {
+
+        Objet objet = new Objet();
+        objet.setId(42);
+        objet.setProprietaireId(8);
+        objet.setStatus("disponible");
+
+        when(objetRepository.getById(42))
+                .thenReturn(objet);
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> objetService
+                        .supprimerAnnonce(42, 7)
+        );
+
+        verify(objetRepository, never())
+                .delete(42);
+    }
+
+    @Test
+    void shouldRejectDeletingNonAvailableItem() {
+
+        Objet objet = new Objet();
+        objet.setId(42);
+        objet.setProprietaireId(7);
+        objet.setStatus("reclame");
+
+        when(objetRepository.getById(42))
+                .thenReturn(objet);
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> objetService
+                        .supprimerAnnonce(42, 7)
+        );
+
+        verify(objetRepository, never())
+                .delete(42);
+    }
 }
