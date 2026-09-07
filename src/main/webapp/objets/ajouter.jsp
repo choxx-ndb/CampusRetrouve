@@ -110,7 +110,14 @@
 
             <div class="mb-4">
                 <label class="form-label">Image</label>
-                <input class="form-control" type="file" name="image" accept="image/*">
+                <input
+				    class="form-control"
+				    type="file"
+				    name="image"
+				    accept=".jpg,.jpeg,.png,image/jpeg,image/png">
+				<div class="form-text">
+				    JPEG ou PNG — 5 Mo maximum.
+				</div>
             </div>
 
             <input

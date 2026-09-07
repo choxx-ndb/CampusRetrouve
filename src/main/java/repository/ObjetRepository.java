@@ -20,6 +20,8 @@ public interface ObjetRepository {
 
     void updateContent(Objet objet);
 
+    void updateContentAndImage(Objet objet);
+
     void updateStatus(int objetId, String status);
 
     int countAll();

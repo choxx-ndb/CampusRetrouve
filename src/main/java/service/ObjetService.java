@@ -113,7 +113,49 @@ public class ObjetService {
         objetRepository.updateContent(objet);
     }
 
-    public void supprimerAnnonce(
+    public String modifierAnnonceAvecImage(
+            int objetId,
+            int utilisateurId,
+            String titre,
+            String description,
+            String type,
+            String localisation,
+            String nouvelleImagePath) {
+
+        if (nouvelleImagePath == null
+                || nouvelleImagePath.isBlank()) {
+
+            throw new IllegalArgumentException(
+                    "Nouvelle image invalide."
+            );
+        }
+
+        Objet objet =
+                recupererAnnoncePossedee(
+                        objetId,
+                        utilisateurId
+                );
+
+        verifierDisponiblePourGestion(objet);
+
+        String ancienneImagePath =
+                objet.getImagePath();
+
+        objet.setTitre(titre);
+        objet.setDescription(description);
+        objet.setType(type);
+        objet.setLocalisation(localisation);
+        objet.setImagePath(nouvelleImagePath);
+
+        validerEtNormaliser(objet);
+
+        objetRepository
+                .updateContentAndImage(objet);
+
+        return ancienneImagePath;
+    }
+
+    public String supprimerAnnonce(
             int objetId,
             int utilisateurId) {
 
@@ -125,7 +167,12 @@ public class ObjetService {
 
         verifierDisponiblePourGestion(objet);
 
+        String imagePath =
+                objet.getImagePath();
+
         objetRepository.delete(objetId);
+
+        return imagePath;
     }
 
     public void supprimer(int id) {

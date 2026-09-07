@@ -1,6 +1,9 @@
 package servlet;
 
 import jakarta.servlet.ServletException;
+
+import service.ImageStorageService;
+import java.nio.file.Path;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -10,10 +13,8 @@ import jakarta.servlet.http.Part;
 import modele.Objet;
 import service.ObjetService;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Paths;
-import java.util.UUID;
+
 
 @WebServlet("/objet")
 @MultipartConfig(
@@ -24,6 +25,8 @@ public class ObjetServlet extends HttpServlet {
 
     private final ObjetService objetService =
             new ObjetService();
+    private final ImageStorageService imageStorageService =
+            new ImageStorageService();
 
     @Override
     protected void doGet(
@@ -239,15 +242,24 @@ public class ObjetServlet extends HttpServlet {
             HttpServletResponse response)
             throws ServletException, IOException {
 
+        String storedImagePath = null;
+
         try {
 
             int userId =
                     getCurrentUserId(request);
 
+            storedImagePath =
+                    imageStorageService
+                            .storeIfPresent(
+                                    request.getPart("image"),
+                                    getUploadDirectory()
+                            );
+
             String imagePath =
-                    uploadImage(
-                            request.getPart("image")
-                    );
+                    storedImagePath == null
+                            ? ImageStorageService.DEFAULT_IMAGE_PATH
+                            : storedImagePath;
 
             Objet objet =
                     new Objet(
@@ -264,10 +276,28 @@ public class ObjetServlet extends HttpServlet {
             response.sendRedirect(
                     request.getContextPath()
                             + "/objet?action=liste"
-                            + "&success=Annonce publiÃ©e"
+                            + "&success=created"
+            );
+        } catch (IllegalStateException ex) {
+
+            deleteImageQuietly(storedImagePath);
+
+            request.setAttribute(
+                    "erreur",
+                    "L'image ne doit pas dépasser 5 Mo."
+            );
+
+            conserverValeursFormulaire(request);
+
+            forward(
+                    request,
+                    response,
+                    "/objets/ajouter.jsp"
             );
 
         } catch (IllegalArgumentException ex) {
+
+            deleteImageQuietly(storedImagePath);
 
             request.setAttribute(
                     "erreur",
@@ -281,6 +311,12 @@ public class ObjetServlet extends HttpServlet {
                     response,
                     "/objets/ajouter.jsp"
             );
+
+        } catch (RuntimeException ex) {
+
+            deleteImageQuietly(storedImagePath);
+
+            throw ex;
         }
     }
 
@@ -363,16 +399,68 @@ public class ObjetServlet extends HttpServlet {
         int userId =
                 getCurrentUserId(request);
 
+        Objet objet;
+
         try {
 
-            objetService.modifierAnnonce(
-                    objetId,
-                    userId,
-                    request.getParameter("titre"),
-                    request.getParameter("description"),
-                    request.getParameter("type"),
-                    request.getParameter("localisation")
+            objet =
+                    objetService
+                            .recupererAnnoncePourModification(
+                                    objetId,
+                                    userId
+                            );
+
+        } catch (IllegalArgumentException ex) {
+
+            response.sendRedirect(
+                    request.getContextPath()
+                            + "/objet?action=mes-annonces"
+                            + "&error=not-allowed"
             );
+
+            return;
+        }
+
+        String nouvelleImagePath = null;
+
+        try {
+
+            nouvelleImagePath =
+                    imageStorageService
+                            .storeIfPresent(
+                                    request.getPart("image"),
+                                    getUploadDirectory()
+                            );
+
+            if (nouvelleImagePath == null) {
+
+                objetService.modifierAnnonce(
+                        objetId,
+                        userId,
+                        request.getParameter("titre"),
+                        request.getParameter("description"),
+                        request.getParameter("type"),
+                        request.getParameter("localisation")
+                );
+
+            } else {
+
+                String ancienneImagePath =
+                        objetService
+                                .modifierAnnonceAvecImage(
+                                        objetId,
+                                        userId,
+                                        request.getParameter("titre"),
+                                        request.getParameter("description"),
+                                        request.getParameter("type"),
+                                        request.getParameter("localisation"),
+                                        nouvelleImagePath
+                                );
+
+                deleteImageQuietly(
+                        ancienneImagePath
+                );
+            }
 
             response.sendRedirect(
                     request.getContextPath()
@@ -380,57 +468,49 @@ public class ObjetServlet extends HttpServlet {
                             + "&success=updated"
             );
 
+        } catch (IllegalStateException ex) {
+
+            deleteImageQuietly(
+                    nouvelleImagePath
+            );
+
+            conserverValeursModification(
+                    request,
+                    objet,
+                    "L'image ne doit pas dépasser 5 Mo."
+            );
+
+            forward(
+                    request,
+                    response,
+                    "/objets/modifier.jsp"
+            );
+
         } catch (IllegalArgumentException ex) {
 
-            try {
+            deleteImageQuietly(
+                    nouvelleImagePath
+            );
 
-                Objet objet =
-                        objetService
-                                .recupererAnnoncePourModification(
-                                        objetId,
-                                        userId
-                                );
+            conserverValeursModification(
+                    request,
+                    objet,
+                    ex.getMessage()
+            );
 
-                objet.setTitre(
-                        request.getParameter("titre")
-                );
+            forward(
+                    request,
+                    response,
+                    "/objets/modifier.jsp"
+            );
 
-                objet.setDescription(
-                        request.getParameter("description")
-                );
+        } catch (RuntimeException ex) {
 
-                objet.setType(
-                        request.getParameter("type")
-                );
+            deleteImageQuietly(
+                    nouvelleImagePath
+            );
 
-                objet.setLocalisation(
-                        request.getParameter("localisation")
-                );
-
-                request.setAttribute(
-                        "objet",
-                        objet
-                );
-
-                request.setAttribute(
-                        "erreur",
-                        ex.getMessage()
-                );
-
-                forward(
-                        request,
-                        response,
-                        "/objets/modifier.jsp"
-                );
-
-            } catch (IllegalArgumentException denied) {
-
-                response.sendRedirect(
-                        request.getContextPath()
-                                + "/objet?action=mes-annonces"
-                                + "&error=not-allowed"
-                );
-            }
+            throw ex;
         }
     }
 
@@ -449,9 +529,14 @@ public class ObjetServlet extends HttpServlet {
 
         try {
 
-            objetService.supprimerAnnonce(
-                    objetId,
-                    userId
+            String imagePath =
+                    objetService.supprimerAnnonce(
+                            objetId,
+                            userId
+                    );
+
+            deleteImageQuietly(
+                    imagePath
             );
 
             response.sendRedirect(
@@ -493,74 +578,76 @@ public class ObjetServlet extends HttpServlet {
                 request.getParameter("localisation")
         );
     }
+    private void conserverValeursModification(
+            HttpServletRequest request,
+            Objet objet,
+            String erreur) {
 
-    private String uploadImage(
-            Part part)
-            throws IOException {
+        objet.setTitre(
+                request.getParameter("titre")
+        );
 
-        if (part == null
-                || part.getSize() == 0) {
+        objet.setDescription(
+                request.getParameter("description")
+        );
 
-            return "uploads/default-object.jpeg";
-        }
+        objet.setType(
+                request.getParameter("type")
+        );
 
-        String submitted =
-                Paths.get(
-                        part.getSubmittedFileName()
-                )
-                .getFileName()
-                .toString();
+        objet.setLocalisation(
+                request.getParameter("localisation")
+        );
 
-        if (submitted == null
-                || submitted.trim().isEmpty()) {
+        request.setAttribute(
+                "objet",
+                objet
+        );
 
-            return "uploads/default-object.jpeg";
-        }
+        request.setAttribute(
+                "erreur",
+                erreur
+        );
+    }
 
-        String extension = "";
+    private Path getUploadDirectory() {
 
-        int dot =
-                submitted.lastIndexOf('.');
-
-        if (dot >= 0) {
-            extension =
-                    submitted
-                            .substring(dot)
-                            .toLowerCase();
-        }
-
-        if (!extension.matches(
-                "\\.(jpg|jpeg|png|gif|webp)")) {
-
-            throw new IllegalArgumentException(
-                    "Format image non autorisée."
-            );
-        }
-
-        String uploadDirPath =
+        String path =
                 getServletContext()
                         .getRealPath("/uploads");
 
-        File uploadDir =
-                new File(uploadDirPath);
+        if (path == null) {
 
-        if (!uploadDir.exists()) {
-            uploadDir.mkdirs();
+            throw new IllegalStateException(
+                    "Répertoire d'upload indisponible."
+            );
         }
 
-        String filename =
-                UUID.randomUUID()
-                        + extension;
+        return Path.of(path);
+    }
 
-        part.write(
-                new File(
-                        uploadDir,
-                        filename
-                )
-                .getAbsolutePath()
-        );
+    private void deleteImageQuietly(
+            String imagePath) {
 
-        return "uploads/" + filename;
+        if (imagePath == null) {
+            return;
+        }
+
+        try {
+
+            imageStorageService.deleteManagedImage(
+                    imagePath,
+                    getUploadDirectory()
+            );
+
+        } catch (Exception ex) {
+
+            getServletContext().log(
+                    "Impossible de supprimer l'image "
+                            + imagePath,
+                    ex
+            );
+        }
     }
 
     private boolean isConnected(

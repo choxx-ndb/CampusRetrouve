@@ -114,6 +114,43 @@ public class ObjetDAO implements CommonDAO<Objet>, ObjetRepository {
         }
     }
     @Override
+    public void updateContentAndImage(
+            Objet objet) {
+
+        String sql =
+                "UPDATE objets "
+                        + "SET titre = ?, "
+                        + "description = ?, "
+                        + "type = ?, "
+                        + "localisation = ?, "
+                        + "image_path = ? "
+                        + "WHERE id = ?";
+
+        try (Connection connection =
+                     DBConnection.getConnection();
+
+             PreparedStatement ps =
+                     connection.prepareStatement(sql)) {
+
+            ps.setString(1, objet.getTitre());
+            ps.setString(2, objet.getDescription());
+            ps.setString(3, objet.getType());
+            ps.setString(4, objet.getLocalisation());
+            ps.setString(5, objet.getImagePath());
+            ps.setInt(6, objet.getId());
+
+            ps.executeUpdate();
+
+        } catch (SQLException e) {
+
+            throw new RuntimeException(
+                    "Erreur lors de la mise à jour "
+                            + "de l'annonce et de son image.",
+                    e
+            );
+        }
+    }
+    @Override
     public void updateStatus(int objetId, String status) {
         String sql = "UPDATE objets SET status = ? WHERE id = ?";
         try (Connection connection = DBConnection.getConnection();
