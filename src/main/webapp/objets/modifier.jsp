@@ -58,8 +58,9 @@
             <% } %>
 
             <form
-                method="post"
-                action="<%= request.getContextPath() %>/objet">
+			    method="post"
+			    enctype="multipart/form-data"
+			    action="<%= request.getContextPath() %>/objet">
 
                 <input
                     type="hidden"
@@ -158,7 +159,32 @@
                         ) %>"
                         maxlength="255">
                 </div>
+                <div class="mb-3">
 
+				    <label class="form-label">
+				        Image actuelle
+				    </label>
+				    <div class="mb-2">
+				        <img
+				            src="<%= request.getContextPath() %>/<%= Encode.forHtmlAttribute(
+				                    objet.getImagePath()
+				            ) %>"
+				            alt="Image actuelle"
+				            style="max-width: 220px; max-height: 180px; object-fit: cover;">
+				    </div>
+				    <label class="form-label">
+				        Remplacer l'image
+				    </label>
+				    <input
+                        class="form-control"
+				        type="file"
+				        name="image"
+				        accept=".jpg,.jpeg,.png,image/jpeg,image/png">
+				    <div class="form-text">
+				        Laissez vide pour conserver l'image actuelle.
+				        JPEG ou PNG — 5 Mo maximum.
+				    </div>
+				</div>
                 <input
                     type="hidden"
                     name="_csrf"
