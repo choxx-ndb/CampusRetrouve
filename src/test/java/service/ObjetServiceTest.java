@@ -485,18 +485,29 @@ class ObjetServiceTest {
     void shouldDeleteOwnedAvailableItem() {
 
         Objet objet = new Objet();
+
         objet.setId(42);
         objet.setProprietaireId(7);
         objet.setStatus("disponible");
+        objet.setImagePath("uploads/owned-image.jpg");
 
         when(objetRepository.getById(42))
                 .thenReturn(objet);
 
-        objetService.supprimerAnnonce(42, 7);
+        String imagePath =
+                objetService.supprimerAnnonce(
+                        42,
+                        7
+                );
 
-        verify(objetRepository).delete(42);
+        assertEquals(
+                "uploads/owned-image.jpg",
+                imagePath
+        );
+
+        verify(objetRepository)
+                .delete(42);
     }
-
     @Test
     void shouldRejectDeletingAnotherUsersItem() {
 
@@ -537,5 +548,64 @@ class ObjetServiceTest {
 
         verify(objetRepository, never())
                 .delete(42);
+    }
+    @Test
+    void shouldUpdateOwnedAvailableItemWithNewImageAndReturnPreviousPath() {
+
+        Objet objet = new Objet(
+                "Ancien titre",
+                "Ancienne description",
+                "perdue",
+                "Ancienne localisation",
+                "uploads/old-image.jpg",
+                7
+        );
+
+        objet.setId(42);
+        objet.setStatus("disponible");
+
+        when(objetRepository.getById(42))
+                .thenReturn(objet);
+
+        String ancienneImagePath =
+                objetService.modifierAnnonceAvecImage(
+                        42,
+                        7,
+                        " Nouveau titre ",
+                        " Nouvelle description ",
+                        " trouve ",
+                        " Nouvelle localisation ",
+                        "uploads/new-image.png"
+                );
+
+        assertAll(
+                () -> assertEquals(
+                        "uploads/old-image.jpg",
+                        ancienneImagePath
+                ),
+                () -> assertEquals(
+                        "uploads/new-image.png",
+                        objet.getImagePath()
+                ),
+                () -> assertEquals(
+                        "Nouveau titre",
+                        objet.getTitre()
+                ),
+                () -> assertEquals(
+                        "trouve",
+                        objet.getType()
+                ),
+                () -> assertEquals(
+                        7,
+                        objet.getProprietaireId()
+                ),
+                () -> assertEquals(
+                        "disponible",
+                        objet.getStatus()
+                )
+        );
+
+        verify(objetRepository)
+                .updateContentAndImage(objet);
     }
 }
